@@ -1,0 +1,62 @@
+name: Commit pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+
+env:
+  PORT: ${{secrets.PORT}}
+  MONGODB_URI: ${{secrets.MONGODB_URI}}
+  SECRET: ${{secrets.JWT_SECRET}}
+  TEST_MONGODB_URI: ${{secrets.TEST_MONGODB_URI}}
+
+jobs:
+  deployment_pipeline:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: npm install backend
+        run: npm install
+      - name: npm install frontend
+        working-directory: bloglist-frontend
+        run: npm install
+      - name: lint
+        run: npm run eslint
+      - name: build
+        run: npm run build:ui
+      - name: test
+        run: npm run test
+      - name: e2e test
+        uses: cypress-io/github-action@v4
+        with:
+          start: npm run start:test
+          wait-on: http://localhost:3003
+      - name: deploy
+        if: ${{github.event_name == 'push' && contains( join(github.event.commits.*.message), 'skip') == false}}
+        uses: akhileshns/heroku-deploy@v3.12.12 
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY }}
+          heroku_app_name: "blog-123123" 
+          heroku_email: ${{secrets.HEROKU_APP_EMAIL}}
+          healthcheck: "https://blog-123123.herokuapp.com/health"
+          checkstring: "ok"
+          rollbackonhealthcheckfailed: true
+  tag_release:
+    needs: [deployment_pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      if: ${{github.event_name == 'push' && contains( join(github.event.commits.*.message), 'skip') == false}}
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+        WITH_V: true
+        DEFAULT_BUMP: patch

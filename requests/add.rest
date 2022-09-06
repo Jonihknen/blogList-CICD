@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs HTTP/1.1
+Content-type: application/json
+
+{
+    "title": "qwe",
+    "author": "joni",
+    "url": "testurl.com",
+    "likes": 5,
+    "userId": "6282ad98f480f19c222ff4c2"
+}

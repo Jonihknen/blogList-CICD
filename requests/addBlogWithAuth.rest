@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs HTTP/1.1
+Content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvbmlYRCIsImlkIjoiNjI4MmFkOThmNDgwZjE5YzIyMmZmNGMyIiwiaWF0IjoxNjUyNzM3NDM5fQ.2EiNpMStGq39QzYED3qql5sBbOOlnItP6ghWtliXxRA
+
+{
+    "title": "ja vielä yksi testi",
+    "author": "joni",
+    "url": "testurl.com",
+    "likes": 5,
+    "userId": "6282ad98f480f19c222ff4c2"
+}

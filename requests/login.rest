@@ -1,0 +1,7 @@
+POST http://blog-app-1337.herokuapp.com/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
